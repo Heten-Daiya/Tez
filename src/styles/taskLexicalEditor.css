@@ -1,0 +1,84 @@
+/**
+ * Task Lexical Editor specific styles
+ */
+
+/* Task editor container */
+.task-lexical-editor {
+  background-color: transparent;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+/* Task editor toolbar */
+.task-editor-toolbar {
+  background-color: rgba(249, 250, 251, 0.5);
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}
+
+.dark .task-editor-toolbar {
+  background-color: rgba(31, 41, 55, 0.5);
+}
+
+/* Task editor content area */
+.task-editor-content {
+  background-color: transparent;
+}
+
+/* Task editor input - using shared editor-input class with task-specific overrides */
+.task-lexical-editor .editor-input {
+  min-height: 60px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background-color: transparent;
+  color: inherit;
+}
+
+/* Placeholder text */
+.task-lexical-editor .editor-placeholder {
+  color: #9ca3af;
+  overflow: hidden;
+  position: absolute;
+  text-overflow: ellipsis;
+  top: 0.5rem;
+  left: 0.5rem;
+  user-select: none;
+  white-space: nowrap;
+  display: inline-block;
+  pointer-events: none;
+  font-size: 0.875rem;
+}
+
+.dark .task-lexical-editor .editor-placeholder {
+  color: #6b7280;
+}
+
+/* Make sure the editor expands with content */
+.task-lexical-editor .editor-container {
+  position: relative;
+}
+
+/* Adjust list styles for task context */
+.task-lexical-editor .editor-list-ul,
+.task-lexical-editor .editor-list-ol {
+  padding-left: 1rem;
+  margin: 0.25rem 0;
+}
+
+.task-lexical-editor .editor-listitem {
+  margin: 0.125rem 0;
+}
+
+/* Wiki links in task context */
+.task-lexical-editor a[href^="wiki:"] {
+  color: #4f46e5;
+  text-decoration: none;
+  border-bottom: 1px dashed #4f46e5;
+}
+
+.dark .task-lexical-editor a[href^="wiki:"] {
+  color: #818cf8;
+  border-bottom-color: #818cf8;
+}

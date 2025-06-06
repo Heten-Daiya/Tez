@@ -1,0 +1,165 @@
+.masonry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  transition: grid-template-columns 0.3s ease-in-out;
+}
+
+/* Maximized view styles */
+.maximized-view {
+  width: 100% !important;
+}
+
+.maximized-view .masonry-grid_column {
+  width: 100% !important;
+}
+
+.maximized-view .masonry-grid_column > div {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.maximized-view .masonry-grid_column > div > div {
+  width: 100%;
+  max-width: none;
+}
+
+.maximized-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 16px;
+}
+
+.maximized-container .masonry-grid {
+  display: block;
+  width: 100% !important;
+}
+
+.masonry-grid.maximized-mode {
+  grid-template-columns: 1fr;
+}
+
+.masonry-grid.maximized-mode .note-card {
+  display: none;
+}
+
+.masonry-grid.maximized-mode .note-card.maximized {
+  display: block;
+  grid-column: 1 / -1;
+}
+
+.maximized-note {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  margin: 1rem;
+  max-width: none !important;
+  transform: scale(0.98);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.maximized-note-entering {
+  transform: scale(1);
+}
+
+/* Masonry layout styles - Pinterest-like grid with horizontal-first flow */
+
+.masonry-grid {
+  display: flex;
+  flex-direction: row; /* Ensure horizontal direction */
+  width: 100%;
+  align-items: flex-start; /* Align items to the top */
+}
+
+.masonry-grid.maximized-view {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+.masonry-grid_column {
+  background-clip: padding-box;
+  flex-grow: 1; /* Allow columns to grow */
+  flex-basis: 0; /* Equal width basis */
+  max-width: 33.333%; /* Limit width to maintain column structure */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.maximized-view .masonry-grid_column {
+  max-width: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+/* Style your items */
+.masonry-grid_column > div {
+  margin-bottom: 16px; /* Space between items */
+  height: fit-content; /* Allow items to size naturally */
+}
+
+/* Ensure the masonry wrapper has proper spacing */
+.masonry-wrapper {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .masonry-grid_column {
+    max-width: 50%; /* Two columns on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .masonry-grid {
+    margin-left: -12px;
+  }
+  .masonry-grid_column {
+    padding-left: 12px;
+    max-width: 50%; /* Two columns on smaller screens */
+  }
+  .masonry-grid_column > div {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .masonry-grid {
+    margin-left: -8px;
+  }
+  .masonry-grid_column {
+    padding-left: 8px;
+    max-width: 100%; /* Single column on mobile */
+  }
+  .masonry-grid_column > div {
+    margin-bottom: 8px;
+  }
+}
+
+
+/* Add these styles to improve drag and drop */
+.masonry-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.masonry-grid_column > div {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Style for the item being dragged */
+.drag-overlay-wrapper {
+  cursor: grabbing;
+  pointer-events: none;
+  transition: transform 0.1s ease;
+}
+
+/* Add a placeholder style for the drop target */
+.masonry-grid_column > div[data-over="true"] {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}

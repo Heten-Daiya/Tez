@@ -6,6 +6,7 @@ Built with the following stack
 
 - Vite
 - Javascript/Typescript
+- Node
 - React
 - Lexical
 - DNDkit
@@ -31,3 +32,17 @@ Partially Working
 - [x] Paste notes
 - [x] Undo/Redo in notes
 - [x] Color Customization
+
+## Installation Instructions
+
+- Install Node.js from here https://nodejs.org/en/download
+- Download Tez and extract or git clone
+- Open the extracted or cloned folder in terminal
+- Run the following commands
+
+```
+npm install;
+npm run build;
+npm run preview
+```
+- Open http://localhost:4173

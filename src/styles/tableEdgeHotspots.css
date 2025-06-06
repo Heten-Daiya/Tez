@@ -1,0 +1,119 @@
+/**
+ * Table Edge Hotspots
+ * Provides interactive hotspots on table edges for inserting rows and columns
+ */
+
+/* Make table cells have a visible border with hotspot areas */
+.editor-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  position: relative;
+}
+
+/* Style for table cells with interactive borders */
+.editor-table-cell,
+.editor-table-cell-header {
+  position: relative;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  min-width: 3rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+.dark .editor-table-cell,
+.dark .editor-table-cell-header {
+  border-color: #4b5563;
+}
+
+/* Horizontal edge hotspots (for row insertion) */
+.editor-table-row {
+  position: relative;
+}
+
+.editor-table-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2.5px;
+  height: 5px;
+  background-color: transparent;
+  cursor: row-resize;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+  border-radius: 5px; /* Add rounded corners */
+  left: 8px; /* Leave out left edge end */
+  right: 8px; /* Leave out right edge end */
+}
+
+.editor-table-row:hover::after {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Vertical edge hotspots (for column insertion) */
+.editor-table-cell::after,
+.editor-table-cell-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -2.5px;
+  width: 5px;
+  background-color: transparent;
+  cursor: col-resize;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+  border-radius: 5px; /* Add rounded corners */
+  top: 8px; /* Leave out top edge end */
+  bottom: 8px; /* Leave out bottom edge end */
+}
+
+.editor-table-cell:hover::after,
+.editor-table-cell-header:hover::after {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Context menu for table edges */
+.table-edge-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  z-index: 100;
+  min-width: 150px;
+}
+
+.dark .table-edge-menu {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.table-edge-menu-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #374151;
+}
+
+.dark .table-edge-menu-item {
+  color: #e5e7eb;
+}
+
+.table-edge-menu-item:hover {
+  background-color: #f3f4f6;
+}
+
+.dark .table-edge-menu-item:hover {
+  background-color: #374151;
+}
+
+/* Ensure the table plugin has proper positioning */
+.table-plugin-wrapper {
+  position: relative;
+}

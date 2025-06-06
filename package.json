@@ -1,0 +1,32 @@
+{
+  "name": "tez",
+  "private": true,
+  "license": "MIT",
+  "version": "0.0.1 - Alpha",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@lexical/markdown": "^0.32.1",
+    "@lexical/react": "^0.32.1",
+    "@lexical/selection": "^0.32.1",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/postcss": "^4.1.8",
+    "@tailwindcss/typography": "^0.5.16",
+    "class-variance-authority": "^0.7.1",
+    "lexical": "^0.32.1",
+    "lucide-react": "^0.513.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-force-graph-3d": "^1.26.1",
+    "react-masonry-css": "^1.0.16",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}

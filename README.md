@@ -22,6 +22,7 @@ What's working
 - [x] Tasks
 - [x] Tags
 - [x] Bulk actions on notes
+
 Partially Working
 - [x] Export notes
 - [x] Import notes

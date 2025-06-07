@@ -95,6 +95,8 @@ export const useNotes = (notes: Note[], setNotes: React.Dispatch<React.SetStateA
         hideContent: true,
         hideTasksSection: true,
         hideTagsSection: true,
+        hideToolbar: true,
+        hideAddTasksButton: true,
 	position: notes.length
       };
       setNotes(prevNotes => [newNote, ...prevNotes]);

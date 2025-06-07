@@ -81,15 +81,95 @@ export const useNoteIO = (notes: Note[], setNotes: React.Dispatch<React.SetState
     
     const tasks: Task[] = [];
     if (tasksMatch) {
-      const taskLines = tasksMatch[1].match(/- \[(x| )\] .*/g) || [];
-      for (const line of taskLines) {
-        const completed = line.includes('[x]');
-        const text = line.replace(/- \[(x| )\] /, '').trim();
-        tasks.push({
+      const taskContent = tasksMatch[1];
+      const taskBlocks = taskContent.split(/\n(?=- \[)/); // Split on task lines
+      
+      for (const block of taskBlocks) {
+        if (!block.trim()) continue;
+        
+        const lines = block.split('\n');
+        const taskLine = lines[0];
+        const metadataLines = lines.slice(1);
+        
+        // Parse main task line
+        const taskMatch = taskLine.match(/- \[(x| )\] (.*)/);
+        if (!taskMatch) continue;
+        
+        const completed = taskMatch[1] === 'x';
+        const titleOrText = taskMatch[2].trim();
+        
+        // Initialize task with defaults
+        const task: Task = {
           id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          text,
-          completed
-        });
+          title: titleOrText,
+          description: '',
+          completed,
+          priority: 'medium' as TaskPriority,
+          status: completed ? 'completed' as TaskStatus : 'not_started' as TaskStatus,
+          progress: completed ? 100 : 0,
+          fulfils: [],
+          requires: [],
+          notifications: [],
+          text: titleOrText // For backward compatibility
+        };
+        
+        // Parse metadata lines
+        for (const line of metadataLines) {
+          const metaMatch = line.match(/^\s*- (\w+): (.*)$/);
+          if (!metaMatch) continue;
+          
+          const [, key, value] = metaMatch;
+          
+          switch (key) {
+            case 'id':
+              task.id = value;
+              break;
+            case 'description':
+              task.description = value;
+              break;
+            case 'priority':
+              task.priority = value as TaskPriority;
+              break;
+            case 'status':
+              task.status = value as TaskStatus;
+              break;
+            case 'progress':
+              task.progress = parseInt(value, 10) || 0;
+              break;
+            case 'startDate':
+              task.startDate = new Date(value);
+              break;
+            case 'endDate':
+              task.endDate = new Date(value);
+              break;
+            case 'fulfils':
+              try {
+                task.fulfils = JSON.parse(value.replace(/\[(.*)\]/, '[$1]'));
+              } catch {
+                task.fulfils = [];
+              }
+              break;
+            case 'requires':
+              try {
+                task.requires = JSON.parse(value.replace(/\[(.*)\]/, '[$1]'));
+              } catch {
+                task.requires = [];
+              }
+              break;
+            case 'notifications':
+              try {
+                task.notifications = JSON.parse(value);
+              } catch {
+                task.notifications = [];
+              }
+              break;
+            case 'text':
+              task.text = value;
+              break;
+          }
+        }
+        
+        tasks.push(task);
       }
     }
 

@@ -27,7 +27,6 @@ What's working
 Partially Working
 - [x] Export notes
 - [x] Import notes
-- [x] Share notes
 - [x] Copy notes
 - [x] Paste notes
 - [x] Undo/Redo in notes
@@ -36,9 +35,15 @@ Partially Working
 ## Installation Instructions
 
 - Install Node.js from here https://nodejs.org/en/download
-- Download Tez and extract or git clone
+- Download Tez and extract.
+- https://github.com/Heten-Daiya/Tez/archive/refs/heads/main.zip
+or
+```
+git clone https://github.com/Heten-Daiya/Tez.git;
+cd tez
+```
 - Open the extracted or cloned folder in terminal
-- Run the following commands
+- Run the following commands (this will be more performant and suggested for testing)
 
 ```
 npm install;
@@ -46,3 +51,9 @@ npm run build;
 npm run preview
 ```
 - Open http://localhost:4173
+- If you choose to run development build (this will allow debugging but will be less performant and recommended for development)
+```
+npm install;
+npm run dev
+```
+- Open http://localhost:5173

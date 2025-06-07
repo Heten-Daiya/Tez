@@ -27,7 +27,6 @@ What's working
 Partially Working
 - [x] Export notes
 - [x] Import notes
-- [x] Share notes
 - [x] Copy notes
 - [x] Paste notes
 - [x] Undo/Redo in notes

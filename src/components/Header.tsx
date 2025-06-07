@@ -189,6 +189,7 @@ const Header: React.FC<HeaderProps> = ({
                   className={`inline-flex items-center px-2 py-2 border border-transparent rounded-r-lg shadow-xs backdrop-blur-sm text-sm font-medium text-white dark:text-gray-200 ${accentColor} hover:bg-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-700 dark:hover:bg-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-400 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-500 border-l border-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-500`}
                   aria-expanded={notesMenuOpen}
                   aria-haspopup="true"
+                  aria-label="Notes Menu"
                 >
                   <ChevronDown className="h-5 w-5" />
                 </button>

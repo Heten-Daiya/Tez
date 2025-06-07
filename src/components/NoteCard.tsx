@@ -200,6 +200,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
           checked={definedIsSelected}
           onChange={(e) => onSelect?.(note.id, e.target.checked)}
           className={`h-4 w-4 rounded border-gray-300 dark:border-gray-600 ${bgToTextColor(effectiveAccentColor)} focus:ring-2 ${bgToRingColor(effectiveAccentColor)} dark:bg-gray-700/50 hover:${bgToTextColor(effectiveAccentColor)} dark:hover:bg-gray-600/50 transition-colors duration-200 mr-2`}
+          aria-label={`Select note ${note.title}`}
         />
         <div className="flex items-center">
           <FooterStats

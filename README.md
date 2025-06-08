@@ -1,5 +1,5 @@
 # Tez
-## v0.0.1 - Alpha
+## v0.0.2 - Alpha
 Tez is a breathtakingly beautiful knowledge aggregator!
 
 Built with the following stack
@@ -12,7 +12,7 @@ Built with the following stack
 - DNDkit
 - Lucide Icons
 
-This is pre-release version v0.0.1 - Alpha
+This is pre-release version v0.0.2 - Alpha
 
 What's working
 - [x] Create a new note
@@ -23,13 +23,13 @@ What's working
 - [x] Tasks
 - [x] Tags
 - [x] Bulk actions on notes
-
-Partially Working
 - [x] Export notes
 - [x] Import notes
 - [x] Copy notes
 - [x] Paste notes
 - [x] Undo/Redo in notes
+
+Partially Working
 - [x] Color Customization
 
 ## Installation Instructions

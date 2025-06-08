@@ -66,6 +66,16 @@ export const generateNoteFrontmatter = (note: Note): string => {
     `color: ${note.color}`,
     `tags: [${note.tags.map(tag => `"${tag}"`).join(', ')}]`,
     `isMaximized: ${note.isMaximized || false}`,
+    `hideToolbar: ${note.hideToolbar || false}`,
+    `hideContent: ${note.hideContent || false}`,
+    `hideAddTask: ${note.hideAddTask || false}`,
+    `hideTasksSection: ${note.hideTasksSection || false}`,
+    `hideTagsSection: ${note.hideTagsSection || false}`,
+    `hideWordCount: ${note.hideWordCount || false}`,
+    `hideReadingTime: ${note.hideReadingTime || false}`,
+    `hidePendingTasks: ${note.hidePendingTasks || false}`,
+    `position: ${note.position || 0}`,
+    ...(note.backgroundImage ? [`backgroundImage: ${note.backgroundImage}`] : []),
     '---',
     '',
   ].join('\n');
@@ -153,8 +163,10 @@ export const parseFrontmatter = (content: string): { frontmatter: any, content: 
         frontmatter.tags = value.slice(1, -1).split(',')
           .map(tag => tag.trim().replace(/"/g, ''))
           .filter(Boolean);
-      } else if (key === 'isMaximized') {
-        frontmatter.isMaximized = value.toLowerCase() === 'true';
+      } else if (['isMaximized', 'hideToolbar', 'hideContent', 'hideAddTask', 'hideTasksSection', 'hideTagsSection', 'hideWordCount', 'hideReadingTime', 'hidePendingTasks'].includes(key)) {
+        frontmatter[key] = value.toLowerCase() === 'true';
+      } else if (key === 'position') {
+        frontmatter.position = parseInt(value, 10) || 0;
       } else {
         frontmatter[key] = value;
       }

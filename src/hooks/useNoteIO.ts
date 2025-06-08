@@ -178,10 +178,20 @@ export const useNoteIO = (notes: Note[], setNotes: React.Dispatch<React.SetState
       title: frontmatter.title || DEFAULT_NOTE_TITLE,
       content: mainContent,
       color: frontmatter.color || DEFAULT_NOTE_COLOR,
+      backgroundImage: frontmatter.backgroundImage,
       tasks,
       createdAt: frontmatter.created ? new Date(frontmatter.created) : new Date(),
       tags: frontmatter.tags || [],
-      isMaximized: frontmatter.isMaximized || false
+      position: frontmatter.position || 0,
+      isMaximized: frontmatter.isMaximized || false,
+      hideToolbar: frontmatter.hideToolbar || false,
+      hideContent: frontmatter.hideContent || false,
+      hideAddTask: frontmatter.hideAddTask || false,
+      hideTasksSection: frontmatter.hideTasksSection || false,
+      hideTagsSection: frontmatter.hideTagsSection || false,
+      hideWordCount: frontmatter.hideWordCount || false,
+      hideReadingTime: frontmatter.hideReadingTime || false,
+      hidePendingTasks: frontmatter.hidePendingTasks || false
     };
   };
 

@@ -66,22 +66,54 @@ export const generateNoteFrontmatter = (note: Note): string => {
     `color: ${note.color}`,
     `tags: [${note.tags.map(tag => `"${tag}"`).join(', ')}]`,
     `isMaximized: ${note.isMaximized || false}`,
+    `hideToolbar: ${note.hideToolbar || false}`,
+    `hideContent: ${note.hideContent || false}`,
+    `hideAddTask: ${note.hideAddTask || false}`,
+    `hideTasksSection: ${note.hideTasksSection || false}`,
+    `hideTagsSection: ${note.hideTagsSection || false}`,
+    `hideWordCount: ${note.hideWordCount || false}`,
+    `hideReadingTime: ${note.hideReadingTime || false}`,
+    `hidePendingTasks: ${note.hidePendingTasks || false}`,
+    `position: ${note.position || 0}`,
+    ...(note.backgroundImage ? [`backgroundImage: ${note.backgroundImage}`] : []),
     '---',
     '',
   ].join('\n');
 };
 
 /**
- * Converts tasks to markdown format
+ * Converts tasks to markdown format with all properties
  * @param tasks - Array of tasks to convert
  * @returns Markdown string of tasks
  */
 export const tasksToMarkdown = (tasks: Task[]): string => {
-  const tasksList = tasks.map(task => 
-    `- [${task.completed ? 'x' : ' '}] ${task.text}`
-  ).join('\n');
+  if (!tasks.length) return '';
   
-  return tasksList ? '## Tasks\n' + tasksList : '';
+  const tasksList = tasks.map(task => {
+    const lines = [];
+    
+    // Basic task line with completion status
+    lines.push(`- [${task.completed ? 'x' : ' '}] ${task.title || task.text || 'Untitled Task'}`);
+    
+    // Add task properties as indented metadata
+    if (task.id) lines.push(`  - id: ${task.id}`);
+    if (task.description) lines.push(`  - description: ${task.description}`);
+    if (task.priority) lines.push(`  - priority: ${task.priority}`);
+    if (task.status) lines.push(`  - status: ${task.status}`);
+    if (task.progress !== undefined) lines.push(`  - progress: ${task.progress}`);
+    if (task.startDate) lines.push(`  - startDate: ${task.startDate.toISOString()}`);
+    if (task.endDate) lines.push(`  - endDate: ${task.endDate.toISOString()}`);
+    if (task.fulfils?.length) lines.push(`  - fulfils: [${task.fulfils.map(id => `"${id}"`).join(', ')}]`);
+    if (task.requires?.length) lines.push(`  - requires: [${task.requires.map(id => `"${id}"`).join(', ')}]`);
+    if (task.notifications?.length) {
+      lines.push(`  - notifications: ${JSON.stringify(task.notifications)}`);
+    }
+    if (task.text && task.text !== task.title) lines.push(`  - text: ${task.text}`);
+    
+    return lines.join('\n');
+  }).join('\n');
+  
+  return '## Tasks\n' + tasksList;
 };
 
 /**
@@ -131,8 +163,10 @@ export const parseFrontmatter = (content: string): { frontmatter: any, content: 
         frontmatter.tags = value.slice(1, -1).split(',')
           .map(tag => tag.trim().replace(/"/g, ''))
           .filter(Boolean);
-      } else if (key === 'isMaximized') {
-        frontmatter.isMaximized = value.toLowerCase() === 'true';
+      } else if (['isMaximized', 'hideToolbar', 'hideContent', 'hideAddTask', 'hideTasksSection', 'hideTagsSection', 'hideWordCount', 'hideReadingTime', 'hidePendingTasks'].includes(key)) {
+        frontmatter[key] = value.toLowerCase() === 'true';
+      } else if (key === 'position') {
+        frontmatter.position = parseInt(value, 10) || 0;
       } else {
         frontmatter[key] = value;
       }

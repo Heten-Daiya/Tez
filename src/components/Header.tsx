@@ -127,6 +127,7 @@ const Header: React.FC<HeaderProps> = ({
             <div className="relative">
               <button
                 onClick={() => setSortMenuOpen(!sortMenuOpen)}
+                onBlur={() => setTimeout(() => setSortMenuOpen(false), 100)}
                 className={`flex items-center p-2 rounded-md transition-colors duration-200 ${
                   darkMode
                     ? 'text-gray-300 hover:bg-gray-700'
@@ -141,7 +142,11 @@ const Header: React.FC<HeaderProps> = ({
               </button>
               
               {sortMenuOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md backdrop-blur-md z-10">
+                <div 
+                className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md backdrop-blur-md z-10"
+                onBlur={() => setNotesMenuOpen(false)}
+                tabIndex={-1}
+                >
                   {Object.entries(sortOptionLabels).map(([value, label]) => (
                     <MenuItem
                       key={value}
@@ -177,7 +182,7 @@ const Header: React.FC<HeaderProps> = ({
             <div className="relative">
               <div className="flex">
                 <button
-                  onClick={showNewNoteForm}
+                  onClick={() => showNewNoteForm()}
                   className={`inline-flex items-center px-4 py-2 border border-transparent rounded-l-lg shadow-xs backdrop-blur-sm text-sm font-medium ${buttonClasses.base} ${buttonClasses.hover} ${buttonClasses.active} transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-500 dark:focus:ring-offset-gray-900`}
                   aria-label="Create new note"
                 >
@@ -186,15 +191,21 @@ const Header: React.FC<HeaderProps> = ({
                 </button>
                 <button
                   onClick={() => setNotesMenuOpen(!notesMenuOpen)}
+                  onBlur={() => setTimeout(() => setNotesMenuOpen(false), 100)}
                   className={`inline-flex items-center px-2 py-2 border border-transparent rounded-r-lg shadow-xs backdrop-blur-sm text-sm font-medium text-white dark:text-gray-200 ${accentColor} hover:bg-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-700 dark:hover:bg-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-400 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-500 border-l border-${accentColor.replace(/^bg-([a-z]+).*$/, '$1')}-500`}
                   aria-expanded={notesMenuOpen}
                   aria-haspopup="true"
+                  aria-label="Notes Menu"
                 >
                   <ChevronDown className="h-5 w-5" />
                 </button>
               </div>
               {notesMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md backdrop-blur-md z-10">
+                <div 
+                  className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md backdrop-blur-md z-10"
+                  onBlur={() => setNotesMenuOpen(false)}
+                  tabIndex={-1}
+                >
                   <MenuItem
                     action={() => exportNotes()}
                     icon={Save}
@@ -211,11 +222,8 @@ const Header: React.FC<HeaderProps> = ({
                   />
                   <MenuItem
                     action={() => {
-                      // Use the setSettingsModalOpen function passed from props
                       if (typeof setShowTasksInEmbeddedNotes === 'function') {
-                        // This indicates we have the new props structure with settings modal
                         setNotesMenuOpen(false);
-                        // Find the parent component's settings modal opener
                         const event = new CustomEvent('openSettingsModal');
                         window.dispatchEvent(event);
                       }

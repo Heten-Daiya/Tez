@@ -283,9 +283,10 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
               contentEditable={
                 <ContentEditable 
                   className="editor-input prose dark:prose-invert max-w-none" 
+                  aria-label="Note content editor"
                 />
               }
-              placeholder={isEmbedded ? null : <div className="editor-placeholder">Start writing...</div>}
+              placeholder={isEmbedded ? null : <div className="editor-placeholder" aria-label="Start writing note content">Start writing...</div>}
               ErrorBoundary={LexicalErrorBoundary}
               decorators={[
                 (node) => {

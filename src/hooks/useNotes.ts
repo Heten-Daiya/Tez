@@ -90,11 +90,12 @@ export const useNotes = (notes: Note[], setNotes: React.Dispatch<React.SetStateA
         tasks: [],
         createdAt: new Date(),
         tags: [new Date().toISOString().split('T')[0]],
-        isMaximized: false,
         isCollapsed: false,
         hideContent: true,
         hideTasksSection: true,
         hideTagsSection: true,
+        hideToolbar: true,
+        hideAddTasksButton: true,
 	position: notes.length
       };
       setNotes(prevNotes => [newNote, ...prevNotes]);
@@ -121,7 +122,6 @@ const updateNote = (noteId: string, updates: Partial<Note>): boolean => {
 
         const originalNote = prevNotes[noteIndex];
         const oldTitle = originalNote.title;
-        const oldIsMaximized = originalNote.isMaximized;
         let notesToUpdate = [...prevNotes];
 
         // If title is changing, update links in other notes
@@ -165,15 +165,14 @@ const updateNote = (noteId: string, updates: Partial<Note>): boolean => {
             completed: Boolean(task.completed)
           })) : currentNote.tasks,
           tags: Array.isArray(updates.tags) ? updates.tags.map(tag => tag.trim()).filter((tag, index, self) => self.findIndex(t => t.toLowerCase() === tag.toLowerCase()) === index) : currentNote.tags,
-          isMaximized: updates.isMaximized !== undefined ? Boolean(updates.isMaximized) : currentNote.isMaximized, // Ensure isMaximized is handled
           isCollapsed: updates.isCollapsed !== undefined ? Boolean(updates.isCollapsed) : currentNote.isCollapsed,
+          hideContent: updates.hideContent !== undefined ? Boolean(updates.hideContent) : currentNote.hideContent,
+          hideTasksSection: updates.hideTasksSection !== undefined ? Boolean(updates.hideTasksSection) : currentNote.hideTasksSection,
+          hideTagsSection: updates.hideTagsSection !== undefined ? Boolean(updates.hideTagsSection) : currentNote.hideTagsSection,
+          hideToolbar: updates.hideToolbar !== undefined ? Boolean(updates.hideToolbar) : currentNote.hideToolbar,
+          hideAddTasksButton: updates.hideAddTasksButton !== undefined ? Boolean(updates.hideAddTasksButton) : currentNote.hideAddTasksButton,
           position: typeof updates.position === 'number' ? updates.position : currentNote.position
         };
-
-        // Scroll to note if it's being restored from maximized state
-        if (oldIsMaximized && validatedUpdates.isMaximized === false) {
-          setTimeout(() => scrollToNote(noteId, 'center'), 100);
-        }
 
         updatedNotes[targetNoteIndex] = { ...currentNote, ...validatedUpdates };
         return updatedNotes;

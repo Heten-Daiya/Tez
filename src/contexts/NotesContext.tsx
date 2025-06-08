@@ -25,7 +25,7 @@ type NotesContextType = {
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
-export const NotesProvider = ({ children }: { children: ReactNode }) => {
+export const NotesProvider = ({ children }: { ReactNode }) => {
   // State for notes management
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -50,8 +50,12 @@ export const NotesProvider = ({ children }: { children: ReactNode }) => {
           })) : [],
           createdAt: new Date(note.createdAt || Date.now()),
           tags: Array.isArray(note.tags) ? note.tags : [],
-          isMaximized: Boolean(note.isMaximized),
           isCollapsed: Boolean(note.isCollapsed),
+          hideContent: Boolean(note.hideContent),
+          hideTasksSection: Boolean(note.hideTasksSection),
+          hideTagsSection: Boolean(note.hideTagsSection),
+          hideToolbar: Boolean(note.hideToolbar),
+          hideAddTasksButton: Boolean(note.hideAddTasksButton),
           position: typeof note.position === 'number' ? note.position : 0
         }));
       }

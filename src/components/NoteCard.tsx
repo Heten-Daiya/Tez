@@ -3,7 +3,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Note, Task } from '../types';
-import { Trash2, Maximize2, Minimize2, Settings, Minus, PanelTopOpen } from 'lucide-react';
+import { Trash2, Settings, Minus, PanelTopOpen } from 'lucide-react';
 import LexicalMarkdownEditor from './LexicalMarkdownEditor';
 import { ButtonIcon } from './ButtonIcon';
 import { TagsSection } from './TagsSection';
@@ -28,8 +28,6 @@ interface NoteCardProps {
   };
   onSelect?: (noteId: string, isSelected: boolean) => void;
   isSelected?: boolean;
-  isGridMaximized: boolean; // Changed from isMaximized to isGridMaximized
-  onMaximizeToggle: () => void; // Changed to be required and no longer takes noteId
   accentColor?: string;
   onNavigateToNote?: (noteTitle: string) => void; // Added for wiki link navigation
 }
@@ -49,8 +47,6 @@ const NoteCard: React.FC<NoteCardProps> = ({
   dragHandleProps = {},
   onSelect,
   isSelected,
-  isGridMaximized, // Destructure the new prop
-  onMaximizeToggle, // Destructure the new prop
   accentColor,
   onNavigateToNote // Destructure the new prop
 }) => {
@@ -91,9 +87,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
   return (
     <div
       id={`note-${note.id}`}
-      className={`${note.color} min-w-[288px] rounded-xl shadow-xs backdrop-blur-3xl dark:bg-gray-800/80 pb-1.5 px-1.5 transition-all duration-300 hover:shadow-xl border border-white/40 dark:border-gray-700/40 ${
-        isGridMaximized ? 'w-full z-10 overflow-auto backdrop-blur-3xl' : '' // Use isGridMaximized
-      }`}
+      className={`${note.color} min-w-[288px] rounded-xl shadow-xs backdrop-blur-3xl dark:bg-gray-800/80 pb-1.5 px-1.5 transition-all duration-300 hover:shadow-xl border border-white/40 dark:border-gray-700/40`}
     >
       <div className="flex justify-between items-center flex-nowrap overflow-visible">
         <div
@@ -132,11 +126,6 @@ const NoteCard: React.FC<NoteCardProps> = ({
             ariaLabel={isCollapsed ? "Expand note" : "Collapse note"}
           />
           <ButtonIcon
-            icon={isGridMaximized ? Minimize2 : Maximize2} // Use isGridMaximized
-            onClick={onMaximizeToggle} // Call the global toggle
-            ariaLabel={isGridMaximized ? "Minimize notes grid" : "Maximize notes grid"} // Update aria-label
-          />
-          <ButtonIcon
             icon={Trash2}
             onClick={() => deleteNote(note.id)}
             ariaLabel="Delete note"
@@ -171,7 +160,6 @@ const NoteCard: React.FC<NoteCardProps> = ({
                 className="text-base dark:text-gray-200 mb-4"
                 notes={allNotes}
                 showTasksInEmbeddedNotes={showTasksInEmbeddedNotes}
-                isMaximized={isGridMaximized} // Pass isGridMaximized to editor
                 onNavigateToNote={onNavigateToNote} // Pass navigation handler
                 ancestorChain={[note.title]} // Initialize ancestor chain with the current note's title
               />

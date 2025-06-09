@@ -10,7 +10,7 @@
  * - Toggle between light and dark mode
  * - Visualize note connections in a 3D dendrogram view
  */
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { cacheSettings } from './utils/cacheUtils';
 import { useAppContext } from './contexts/AppContext';
 import { useNotesContext } from './contexts/NotesContext';
@@ -84,6 +84,13 @@ function App() {
     handleSetBackgroundImage
   } = useUIState()
 
+  // State for grid maximization
+  const [isGridMaximized, setIsGridMaximized] = useState<boolean>(false);
+
+  const handleMaximizeToggle = () => {
+    setIsGridMaximized(prev => !prev);
+  };
+
   const handleTestNotification = async () => {
     if (Notification.permission === 'granted') {
       new Notification('Tez Notification', {
@@ -107,7 +114,7 @@ function App() {
   return (
     // Main application wrapper with dark mode support
     <div 
-      className={`min-h-screen transition-all duration-500 ease-in-out ${darkMode ? 'dark bg-gray-900' : 'bg-gray-300'}`}
+      className={`min-h-screen transition-all duration-500 ease-in-out ${darkMode ? 'dark bg-gray-900' : 'bg-gray-300'} ${isGridMaximized ? 'maximized-container' : ''}`}
       style={backgroundImage ? {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -129,6 +136,8 @@ function App() {
         setShowTasksInEmbeddedNotes={setShowTasksInEmbeddedNotes}
         showDendrogram={showDendrogram}
         setShowDendrogram={setShowDendrogram}
+        isGridMaximized={isGridMaximized} // Pass to Header
+        onMaximizeToggle={handleMaximizeToggle} // Pass to Header
         handleTestNotification={handleTestNotification}
         accentColor={accentColor}
       />
@@ -220,6 +229,8 @@ function App() {
           showTasksInEmbeddedNotes={showTasksInEmbeddedNotes}
           accentColor={accentColor}
           editingNoteId={editingNoteId} // Pass editingNoteId to NotesGrid
+          isGridMaximized={isGridMaximized} // Pass to NotesGrid
+          onMaximizeToggle={handleMaximizeToggle} // Pass to NotesGrid
         />
       </main>
       

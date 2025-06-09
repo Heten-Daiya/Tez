@@ -35,10 +35,12 @@ type NotesGridProps = {
   showTasksInEmbeddedNotes: boolean;
   accentColor?: string;
   editingNoteId?: string | null; // Added to track the note being edited for color changes etc.
+  isGridMaximized: boolean; // Changed to be a prop
+  onMaximizeToggle: () => void; // Changed to be a prop
   // onNavigateToNote is for parent overriding, internal navigation uses handleNavigate directly
 };
 
-const SortableItem: FC<NotesGridProps & { id: string; isGridMaximized: boolean; onMaximizeToggle: () => void }> = (props) => {
+const SortableItem: FC<NotesGridProps & { id: string }> = (props) => {
   const {
     attributes,
     listeners,
@@ -71,8 +73,6 @@ const SortableItem: FC<NotesGridProps & { id: string; isGridMaximized: boolean; 
           {...props} // Spread all props from SortableItem
           allNotes={props.notes} // Explicitly map SortableItem's 'notes' prop to NoteCard's 'allNotes' prop
           dragHandleProps={{...listeners}}
-          isGridMaximized={props.isGridMaximized} // Pass isGridMaximized
-          onMaximizeToggle={props.onMaximizeToggle} // Pass onMaximizeToggle
           onNavigateToNote={props.onNavigateToNote || handleNavigate} // Pass down navigation handler
           // Note: editingNoteId is not directly passed to NoteCard, it's used by NotesGrid for scrolling logic
         />
@@ -94,10 +94,11 @@ export const NotesGrid: FC<NotesGridProps> = ({
   showTasksInEmbeddedNotes,
   accentColor = 'bg-indigo-600',
   editingNoteId,
-  onNavigateToNote
+  onNavigateToNote,
+  isGridMaximized, // Destructure new prop
+  onMaximizeToggle // Destructure new prop
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
-  const [isGridMaximized, setIsGridMaximized] = useState<boolean>(false); // Changed to boolean
 
   // Get sort option and direction from context
   const { sortOption, sortDirection } = useAppContext();
@@ -230,11 +231,6 @@ export const NotesGrid: FC<NotesGridProps> = ({
     }
   }, [editingNoteId, sortOption, sortDirection, sortedNotes]);
 
-
-
-  const handleMaximizeToggle = () => { // Simplified to toggle global state
-    setIsGridMaximized(prev => !prev);
-  };
 
   // Determine breakpoint columns based on maximized state
   const breakpointColumnsObj = isGridMaximized // Use isGridMaximized
@@ -382,7 +378,7 @@ export const NotesGrid: FC<NotesGridProps> = ({
                     onSelect={handleNoteSelect} // From useNoteSelection
                     isSelected={selectedNotes.includes(note.id)} // From useNoteSelection
                     isGridMaximized={isGridMaximized} // Pass isGridMaximized
-                    onMaximizeToggle={handleMaximizeToggle} // Pass the global toggle
+                    onMaximizeToggle={onMaximizeToggle} // Pass the global toggle
                     onNavigateToNote={handleNavigate} // Pass navigation handler
                     // Add the note prop specifically for NoteCard within SortableItem
                     note={note} 
@@ -409,8 +405,6 @@ export const NotesGrid: FC<NotesGridProps> = ({
                       deleteTask={deleteTask}
                       allNotes={notes}
                       showTasksInEmbeddedNotes={showTasksInEmbeddedNotes}
-                      isGridMaximized={isGridMaximized} // Pass isGridMaximized
-                      onMaximizeToggle={handleMaximizeToggle} // Pass the global toggle
                       accentColor={accentColor}
                     />
                   </div>

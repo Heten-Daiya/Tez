@@ -2,7 +2,7 @@
  * Header component containing app navigation, search, and menu functionality
  */
 import React, { useState } from 'react';
-import { Layout, Search, Moon, Sun, ChevronDown, Menu, PlusCircle, Save, FilePlus, Settings, Network, Bell, SortAsc, SortDesc } from 'lucide-react';
+import { Layout, Search, Moon, Sun, ChevronDown, Menu, PlusCircle, Save, FilePlus, Settings, Network, Bell, SortAsc, SortDesc, Maximize2, Minimize2 } from 'lucide-react';
 import logoSvg from '../media/logo/SVG/Tez.svg';
 import { MenuItem } from './MenuItem';
 import { SortOption, useAppContext } from '../contexts/AppContext';
@@ -20,6 +20,8 @@ interface HeaderProps {
   setShowTasksInEmbeddedNotes?: (show: boolean) => void;
   showDendrogram?: boolean;
   setShowDendrogram?: (show: boolean) => void;
+  isGridMaximized: boolean; // New prop
+  onMaximizeToggle: () => void; // New prop
   handleTestNotification: () => void;
   accentColor?: string;
 }
@@ -43,6 +45,8 @@ const Header: React.FC<HeaderProps> = ({
   setShowTasksInEmbeddedNotes = () => {},
   showDendrogram = false,
   setShowDendrogram = () => {},
+  isGridMaximized, // Destructure new prop
+  onMaximizeToggle, // Destructure new prop
   handleTestNotification,
   accentColor = 'bg-indigo-600'
 }) => {
@@ -164,6 +168,20 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Maximize/Minimize Grid button */}
+            <button
+              onClick={onMaximizeToggle}
+              className={`p-2 rounded-md transition-colors duration-200 ${
+                darkMode
+                  ? 'text-gray-300 hover:bg-gray-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              aria-label={isGridMaximized ? "Minimize notes grid" : "Maximize notes grid"}
+              title={isGridMaximized ? "Minimize notes grid" : "Maximize notes grid"}
+            >
+              {isGridMaximized ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+            </button>
             
             {/* Notification test button */}
             <button
@@ -313,6 +331,13 @@ const Header: React.FC<HeaderProps> = ({
                 action={() => setShowDendrogram(!showDendrogram)}
                 icon={Network}
                 text={`${showDendrogram ? 'Hide' : 'Show'} 3D View`}
+                darkMode={darkMode}
+                onClose={() => setMobileMenuOpen(false)}
+              />
+              <MenuItem
+                action={onMaximizeToggle}
+                icon={isGridMaximized ? Minimize2 : Maximize2}
+                text={isGridMaximized ? "Minimize Grid" : "Maximize Grid"}
                 darkMode={darkMode}
                 onClose={() => setMobileMenuOpen(false)}
               />

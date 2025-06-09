@@ -30,7 +30,7 @@ export const FooterStats = ({
   const dropTasks = note.tasks.filter(task => task.status === TaskStatus.Cancelled).length;
   const doneTasks = note.tasks.filter(task => task.completed).length;
   return (
-    <div className="flex items-center text-gray-500 dark:text-gray-400">
+    <div className="flex items-center text-gray-500 dark:text-gray-400 h-4">
       {note.hideWordCount && `${totalWords} words`}
       {note.hideWordCount && note.hideReadingTime && ' • '}
       {note.hideReadingTime && `${Math.ceil(totalWords / 200)} min read`}

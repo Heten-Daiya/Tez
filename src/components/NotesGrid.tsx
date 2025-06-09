@@ -160,6 +160,10 @@ export const NotesGrid: FC<NotesGridProps> = ({
         default:
           result = (a.position ?? 0) - (b.position ?? 0);
           break;
+
+        case 'color':
+          result = a.color.localeCompare(b.color);
+          break;
       }
       
       // Reverse the sort order if direction is descending

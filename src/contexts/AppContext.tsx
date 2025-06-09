@@ -9,7 +9,7 @@ export type MediaFile = {
   url: string;
 };
 
-export type SortOption = 'title' | 'dateCreated' | 'size' | 'contentLength' | 'taskCount' | 'pendingTaskCount' | 'position';
+export type SortOption = 'title' | 'dateCreated' | 'size' | 'contentLength' | 'taskCount' | 'pendingTaskCount' | 'position' | 'color';
 
 type AppContextType = {
   darkMode: boolean;

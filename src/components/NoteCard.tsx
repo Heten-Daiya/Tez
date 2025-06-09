@@ -114,7 +114,14 @@ const NoteCard: React.FC<NoteCardProps> = ({
           onChange={handleTitleChange}
           className="text-lg font-medium bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-500 dark:text-gray-300 dark:placeholder-gray-500 flex-1 min-w-0 mr-1 transition-colors duration-200 hover:bg-gray-100/30 dark:hover:bg-gray-700/30 rounded px-1 my-2 h-6"
         />
+        <div className="mx-2 h-5 w-px bg-gray-300 dark:bg-gray-600"></div>
         <div className="flex gap-2">
+          <ButtonIcon
+            icon={Settings}
+            onClick={() => setShowSettings(!showSettings)}
+            ariaLabel="Note settings"
+            className={`text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transform transition-transform ${showSettings ? 'rotate-180' : ''}`}
+          />
           <ButtonIcon
             icon={isCollapsed ? PanelTopOpen : Minus}
             onClick={() => {
@@ -188,7 +195,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
           </>
         )}
       </div>
-      <div className="pt-2 border-t border-gray-200/50 dark:border-gray-700/40 flex justify-between items-center text-sm">
+      <div className="pt-2 flex justify-between items-center text-sm">
         <input
           type="checkbox"
           checked={definedIsSelected}
@@ -201,13 +208,6 @@ const NoteCard: React.FC<NoteCardProps> = ({
             note={note}
             updateNote={(updates) => updateNote(note.id, updates)}
             onSettingsToggle={() => setShowSettings(!showSettings)}
-          />
-          <div className="mx-2 h-5 w-px bg-gray-300 dark:bg-gray-600"></div>
-          <ButtonIcon
-            icon={Settings}
-            onClick={() => setShowSettings(!showSettings)}
-            ariaLabel="Note settings"
-            className={`text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transform transition-transform ${showSettings ? 'rotate-180' : ''}`}
           />
         </div>
       </div>

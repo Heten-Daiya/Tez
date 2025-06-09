@@ -66,7 +66,8 @@ const Header: React.FC<HeaderProps> = ({
     'contentLength': 'Content Length',
     'taskCount': 'Task Count',
     'pendingTaskCount': 'Pending Tasks',
-    'position': 'Manual Order'
+    'position': 'Manual Order',
+    'color' : 'Color' 
   };
 
   return (
@@ -137,7 +138,7 @@ const Header: React.FC<HeaderProps> = ({
                 title="Sort notes"
               >
                 {sortDirection === 'asc' ? <SortAsc className="h-5 w-5 mr-1" /> : <SortDesc className="h-5 w-5 mr-1" />}
-                <span className="text-sm">{sortOptionLabels[sortOption]} ({sortDirection})</span>
+                <span className="text-sm">{sortOptionLabels[sortOption]} - {sortDirection}</span>
                 <ChevronDown className="h-4 w-4 ml-1" />
               </button>
               

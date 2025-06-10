@@ -2,7 +2,7 @@
  * Header component containing app navigation, search, and menu functionality
  */
 import React, { useState } from 'react';
-import { Layout, Search, Moon, Sun, ChevronDown, Menu, PlusCircle, Save, FilePlus, Settings, Network, Bell, SortAsc, SortDesc, Maximize2, Minimize2 } from 'lucide-react';
+import { Layout, Search, Moon, Sun, ChevronDown, Menu, PlusCircle, Save, FilePlus, Settings, Network, Bell, SortAsc, SortDesc, StretchHorizontal, LayoutDashboard } from 'lucide-react';
 import logoSvg from '../media/logo/SVG/Tez.svg';
 import { MenuItem } from './MenuItem';
 import { SortOption, useAppContext } from '../contexts/AppContext';
@@ -22,7 +22,6 @@ interface HeaderProps {
   setShowDendrogram?: (show: boolean) => void;
   isGridMaximized: boolean; // New prop
   onMaximizeToggle: () => void; // New prop
-  handleTestNotification: () => void;
   accentColor?: string;
 }
 
@@ -47,7 +46,6 @@ const Header: React.FC<HeaderProps> = ({
   setShowDendrogram = () => {},
   isGridMaximized, // Destructure new prop
   onMaximizeToggle, // Destructure new prop
-  handleTestNotification,
   accentColor = 'bg-indigo-600'
 }) => {
   // Get sort option from context
@@ -180,21 +178,7 @@ const Header: React.FC<HeaderProps> = ({
               aria-label={isGridMaximized ? "Minimize notes grid" : "Maximize notes grid"}
               title={isGridMaximized ? "Minimize notes grid" : "Maximize notes grid"}
             >
-              {isGridMaximized ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
-            </button>
-            
-            {/* Notification test button */}
-            <button
-              onClick={handleTestNotification}
-              className={`p-2 rounded-md transition-colors duration-200 ${
-                darkMode
-                  ? 'text-gray-300 hover:bg-gray-700'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-              aria-label="Test notification"
-              title="Test browser notification"
-            >
-              <Bell className="h-5 w-5" />
+              {isGridMaximized ? <LayoutDashboard className="h-5 w-5" /> : <StretchHorizontal className="h-5 w-5" />}
             </button>
 
             {/* Notes dropdown menu */}
@@ -336,7 +320,7 @@ const Header: React.FC<HeaderProps> = ({
               />
               <MenuItem
                 action={onMaximizeToggle}
-                icon={isGridMaximized ? Minimize2 : Maximize2}
+                icon={isGridMaximized ? LayoutDashboard : StretchHorizontal}
                 text={isGridMaximized ? "Minimize Grid" : "Maximize Grid"}
                 darkMode={darkMode}
                 onClose={() => setMobileMenuOpen(false)}

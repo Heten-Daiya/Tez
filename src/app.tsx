@@ -138,7 +138,6 @@ function App() {
         setShowDendrogram={setShowDendrogram}
         isGridMaximized={isGridMaximized} // Pass to Header
         onMaximizeToggle={handleMaximizeToggle} // Pass to Header
-        handleTestNotification={handleTestNotification}
         accentColor={accentColor}
       />
 

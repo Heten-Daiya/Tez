@@ -10,7 +10,7 @@ type NotesContextType = {
   filteredNotes: Note[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  createNote: () => string | null;
+  createNote: (title?: string) => string | null; // Allow optional title
   updateNote: (noteId: string, updates: Partial<Note>) => boolean;
   deleteNote: (noteId: string, skipConfirmation?: boolean) => boolean;
   addTask: (noteId: string) => void;

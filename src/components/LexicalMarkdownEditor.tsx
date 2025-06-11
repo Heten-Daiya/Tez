@@ -15,7 +15,7 @@ import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { TableEdgePlugin } from './editor/TableEdgePlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { LexicalEditor } from 'lexical';
+import { LexicalEditor, $getSelection, $isRangeSelection, NodeKey, $getNodeByKey } from 'lexical'; // Import $getSelection, NodeKey, $getNodeByKey
 import { LinkNode, AutoLinkNode } from '@lexical/link'; // Keep AutoLinkNode if used elsewhere or by default transformers
 import { ListNode, ListItemNode } from '@lexical/list';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
@@ -29,8 +29,8 @@ import EditorToolbar from './editor/EditorToolbar';
 import EditorObserver from './editor/EditorObserver';
 import { customTransformers } from './editor/EditorTransformers';
 import { insertWikiLink, insertEmbeddedNote } from './editor/EditorLinkUtils';
-import { WikiLinkNode } from './editor/nodes/WikiLinkNode';
-import { EmbeddedNoteNode } from './editor/nodes/EmbeddedNoteNode';
+import { WikiLinkNode, $isWikiLinkNode } from './editor/nodes/WikiLinkNode'; // Import $isWikiLinkNode
+import { EmbeddedNoteNode, $isEmbeddedNoteNode } from './editor/nodes/EmbeddedNoteNode'; // Import $isEmbeddedNoteNode
 import { ImageNode } from './editor/nodes/ImageNode';
 import { HorizontalRuleNode } from './editor/nodes/HorizontalRuleNode';
 import { MathNode } from './editor/nodes/MathNode';
@@ -38,8 +38,11 @@ import { HTMLNode } from './editor/nodes/HTMLNode';
 import { EditorPropsProvider } from './editor/EditorPropsContext';
 import { VideoNode } from './editor/nodes/VideoNode';
 import { AudioNode } from './editor/nodes/AudioNode';
-import { MediaReferenceNode } from './MediaReferenceNode';
+import { MediaReferenceNode, $isMediaReferenceNode } from './MediaReferenceNode'; // Import $isMediaReferenceNode
 import { MediaRenderer } from './MediaRenderer';
+import NoteSelectionModal from './NoteSelectionModal'; // Import the new modal
+import { useAppContext } from '../contexts/AppContext'; // Import useAppContext
+import { TableDeletePlugin } from './editor/TableDeletePlugin'; // NEW: Import TableDeletePlugin
 
 interface LexicalMarkdownEditorProps {
   value: string;
@@ -55,7 +58,7 @@ interface LexicalMarkdownEditorProps {
   showTasksInEmbeddedNotes?: boolean;
   isMaximized?: boolean;
   // Track ancestor notes to prevent circular embeds
-  ancestorChain?: string[];
+  ancestorChain?: string[]; // Now stores note IDs
 }
 
 // Theme for Lexical editor with GFM support
@@ -107,9 +110,13 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
   onWikiLinkClick: onWikiLinkClickProp,
   note, // Destructure the note prop
 }) => {
+  const { accentColor } = useAppContext(); // Get accentColor from context
   const [editor, setEditor] = useState<LexicalEditor | null>(null);
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isNoteSelectionModalOpen, setIsNoteSelectionModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'link' | 'embed' | null>(null);
+  const [initialSearchTerm, setInitialSearchTerm] = useState<string | undefined>(undefined); // New state for initial search term
   
   // Ensure value is a valid serialized Lexical state
   useEffect(() => {
@@ -174,19 +181,109 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
     }
   };
 
-  const getNoteContentForEmbed = (noteIdOrTitle: string): string => {
-    const note = notes.find(n => n.id === noteIdOrTitle || n.title === noteIdOrTitle);
+  // Changed parameter to noteId
+  const getNoteContentForEmbed = (noteId: string): string => {
+    const note = notes.find(n => n.id === noteId); // Find by ID
     if (note) {
       try {
         // Ensure embedded content is valid serialized editor state
         JSON.parse(note.content);
         return note.content;
       } catch {
-        console.error('Invalid editor state in embedded note:', noteIdOrTitle);
+        console.error('Invalid editor state in embedded note:', noteId);
         return JSON.stringify({ root: { children: [{ children: [], direction: null, format: '', indent: 0, type: 'paragraph', version: 1 }], direction: null, format: '', indent: 0, type: 'root', version: 1 } });
       }
     }
-    return `Content for "${noteIdOrTitle}" not found.`;
+    return `Content for "${noteId}" not found.`;
+  };
+
+  const handleOpenNoteSelectionModal = (type: 'link' | 'embed', search?: string) => {
+    setModalType(type);
+    setInitialSearchTerm(search); // Set the initial search term
+    setIsNoteSelectionModalOpen(true);
+  };
+
+  const handleNotesSelectedFromModal = (selectedNotes: Note[]) => {
+    if (!editor || !modalType) return;
+
+    if (modalType === 'link') {
+      insertWikiLink(editor, selectedNotes);
+    } else if (modalType === 'embed') {
+      insertEmbeddedNote(editor, selectedNotes);
+    }
+    setIsNoteSelectionModalOpen(false);
+    setModalType(null);
+    setInitialSearchTerm(undefined); // Clear search term after selection
+  };
+
+  const handleInsertWikiLink = () => {
+    if (!editor) return;
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection) && !selection.isCollapsed()) {
+        const selectedText = selection.getTextContent();
+        const matchingNotes = notes.filter(note => 
+          note.title.toLowerCase() === selectedText.toLowerCase()
+        );
+
+        if (matchingNotes.length === 1) {
+          insertWikiLink(editor, [matchingNotes[0]]);
+        } else if (matchingNotes.length > 1) {
+          handleOpenNoteSelectionModal('link', selectedText);
+        } else {
+          // No exact match, open modal with search term
+          handleOpenNoteSelectionModal('link', selectedText);
+        }
+      } else {
+        // No text selected, open modal without initial search
+        handleOpenNoteSelectionModal('link');
+      }
+    });
+  };
+
+  const handleInsertEmbeddedNote = () => {
+    if (!editor) return;
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection) && !selection.isCollapsed()) {
+        const selectedText = selection.getTextContent();
+        const matchingNotes = notes.filter(note => 
+          note.title.toLowerCase() === selectedText.toLowerCase()
+        );
+
+        if (matchingNotes.length === 1) {
+          insertEmbeddedNote(editor, [matchingNotes[0]]);
+        } else if (matchingNotes.length > 1) {
+          handleOpenNoteSelectionModal('embed', selectedText);
+        } else {
+          // No exact match, open modal with search term
+          handleOpenNoteSelectionModal('embed', selectedText);
+        }
+      } else {
+        // No text selected, open modal without initial search
+        handleOpenNoteSelectionModal('embed');
+      }
+    });
+  };
+
+  const handleConvertLinkToEmbed = (nodeKey: NodeKey, targetId: string) => {
+    editor?.update(() => {
+      const node = $getNodeByKey(nodeKey);
+      if ($isWikiLinkNode(node)) {
+        const embeddedNoteNode = node.convertToEmbeddedNote();
+        node.replace(embeddedNoteNode);
+      }
+    });
+  };
+
+  const handleConvertEmbedToLink = (nodeKey: NodeKey, targetId: string) => {
+    editor?.update(() => {
+      const node = $getNodeByKey(nodeKey);
+      if ($isEmbeddedNoteNode(node)) {
+        const wikiLinkNode = node.convertToWikiLink();
+        node.replace(wikiLinkNode);
+      }
+    });
   };
 
   // Initial Lexical configuration with GFM support
@@ -248,11 +345,11 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
           Drop to embed media
         </div>
       )}
-      {!isEmbedded && note?.hideToolbar && (
+      {!isEmbedded && note?.hideToolbar && ( // Flipped condition to show toolbar
         <EditorToolbar 
           editor={editor} 
-          insertWikiLink={() => insertWikiLink(editor)} 
-          insertEmbeddedNote={() => insertEmbeddedNote(editor)} 
+          insertWikiLink={handleInsertWikiLink} 
+          insertEmbeddedNote={handleInsertEmbeddedNote} 
           darkMode={false}
           isSourceMode={isSourceMode}
           onToggleSourceMode={toggleSourceMode} 
@@ -266,7 +363,9 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
           getNoteContent={getNoteContentForEmbed}
           showTasksInEmbeddedNotes={showTasksInEmbeddedNotes}
           onNavigateToNote={onNavigateToNoteProp} // Pass down the main navigation handler
-          ancestorChain={ancestorChain || []} // Pass ancestor chain for circular embed prevention
+          ancestorChain={ancestorChain || []} // Pass ancestor chain (with IDs) for circular embed prevention
+          onConvertLinkToEmbed={handleConvertLinkToEmbed} // Pass conversion handler
+          onConvertEmbedToLink={handleConvertEmbedToLink} // Pass conversion handler
         >
           {isSourceMode ? (
             <textarea
@@ -309,6 +408,7 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
             <CheckListPlugin /> {/* Needed for rendering checklists */}
             <TablePlugin /> {/* Needed for rendering tables */}
             {!isEmbedded && <TableEdgePlugin />} {/* Adds interactive hotspots on table edges */}
+            {!isEmbedded && <TableDeletePlugin />} {/* NEW: Adds delete button for tables */}
             {!isEmbedded && <MarkdownShortcutPlugin transformers={customTransformers} />}
             
             {/* Custom plugin to handle editor initialization and content changes */}
@@ -322,6 +422,13 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
           )}
         </EditorPropsProvider>
       </div>
+      <NoteSelectionModal
+        isOpen={isNoteSelectionModalOpen}
+        onClose={() => setIsNoteSelectionModalOpen(false)}
+        onSelectNotes={handleNotesSelectedFromModal}
+        type={modalType || 'link'} // Default to 'link' if null
+        initialSearchTerm={initialSearchTerm} // Pass the initial search term
+      />
     </div>
   );
 };

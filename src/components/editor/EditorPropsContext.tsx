@@ -1,43 +1,53 @@
 import React, { createContext, useContext } from 'react';
 import { Note } from '../../types';
+import { NodeKey } from 'lexical';
 
-export interface EditorProps {
+interface EditorProps {
   notes: Note[];
-  onWikiLinkClick?: (targetTitle: string) => void;
-  onNavigateToNote?: (targetTitle: string) => void;
-  getNoteContent?: (noteId: string) => string;
-  showTasksInEmbeddedNotes?: boolean;
-  // Track ancestor notes to prevent circular embeds
-  ancestorChain?: string[];
+  onWikiLinkClick: (noteTitle: string) => void;
+  getNoteContent: (noteId: string) => string;
+  showTasksInEmbeddedNotes: boolean;
+  onNavigateToNote?: (noteTitle: string) => void;
+  ancestorChain?: string[]; // Array of note IDs to detect circular embeds
+  onConvertLinkToEmbed?: (nodeKey: NodeKey, targetId: string) => void; // New prop for conversion
+  onConvertEmbedToLink?: (nodeKey: NodeKey, targetId: string) => void; // New prop for conversion
 }
 
 const EditorPropsContext = createContext<EditorProps | undefined>(undefined);
 
-export const EditorPropsProvider: React.FC<EditorProps & { children: React.ReactNode }> = ({ children, ...props }) => {
+export const EditorPropsProvider: React.FC<React.PropsWithChildren<EditorProps>> = ({
+  children,
+  notes,
+  onWikiLinkClick,
+  getNoteContent,
+  showTasksInEmbeddedNotes,
+  onNavigateToNote,
+  ancestorChain,
+  onConvertLinkToEmbed,
+  onConvertEmbedToLink,
+}) => {
   return (
-    <EditorPropsContext.Provider value={props}>
+    <EditorPropsContext.Provider
+      value={{
+        notes,
+        onWikiLinkClick,
+        getNoteContent,
+        showTasksInEmbeddedNotes,
+        onNavigateToNote,
+        ancestorChain,
+        onConvertLinkToEmbed,
+        onConvertEmbedToLink,
+      }}
+    >
       {children}
     </EditorPropsContext.Provider>
   );
 };
 
-export const useEditorProps = (): EditorProps => {
+export const useEditorProps = () => {
   const context = useContext(EditorPropsContext);
-  if (!context) {
-    // Provide default values or throw an error if the context is essential
-    // For now, let's provide defaults to prevent crashes if used outside a provider,
-    // though in practice, it should always be within a provider in the editor.
-    console.warn('useEditorProps must be used within an EditorPropsProvider. Using default empty values.');
-    return {
-        notes: [],
-        showTasksInEmbeddedNotes: true,
-        onWikiLinkClick: (title) => console.warn(`onWikiLinkClick not provided, attempted for: ${title}`),
-        onNavigateToNote: (title) => console.warn(`onNavigateToNote not provided, attempted for: ${title}`),
-        getNoteContent: (id) => {
-            console.warn(`getNoteContent not provided, attempted for ID: ${id}`);
-            return '';
-        }
-    };
+  if (context === undefined) {
+    throw new Error('useEditorProps must be used within an EditorPropsProvider');
   }
   return context;
 };

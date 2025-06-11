@@ -30,8 +30,8 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
 
 interface EditorToolbarProps {
   editor: LexicalEditor | null;
-  insertWikiLink: () => void;
-  insertEmbeddedNote: () => void;
+  insertWikiLink: () => void; // Now triggers conditional logic in parent
+  insertEmbeddedNote: () => void; // Now triggers conditional logic in parent
   darkMode?: boolean;
   isSourceMode: boolean; // Now a required prop
   onToggleSourceMode: () => void; // Now a required prop
@@ -39,8 +39,8 @@ interface EditorToolbarProps {
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
   editor,
-  insertWikiLink,
-  insertEmbeddedNote,
+  insertWikiLink, // This prop now represents the conditional logic from LexicalMarkdownEditor
+  insertEmbeddedNote, // This prop now represents the conditional logic from LexicalMarkdownEditor
   darkMode = false,
   isSourceMode, // Received as prop
   onToggleSourceMode // Received as prop
@@ -115,8 +115,8 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
     { icon: Table, title: 'Insert Table', onClick: () => setIsTableModalOpen(true) },
     { type: 'separator' },
     // Links & Embeds
-    { icon: LinkIcon, title: 'Insert Wiki Link', onClick: insertWikiLink },
-    { icon: SquareSquare, title: 'Insert Embedded Note', onClick: insertEmbeddedNote },
+    { icon: LinkIcon, title: 'Insert Wiki Link', onClick: insertWikiLink }, // Now calls the prop
+    { icon: SquareSquare, title: 'Insert Embedded Note', onClick: insertEmbeddedNote }, // Now calls the prop
     { type: 'separator' },
     // Media
     { icon: Image, title: 'Insert Image', onClick: () => handleMediaInsert('image') },

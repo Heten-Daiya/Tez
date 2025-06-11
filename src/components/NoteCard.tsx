@@ -161,7 +161,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                 notes={allNotes}
                 showTasksInEmbeddedNotes={showTasksInEmbeddedNotes}
                 onNavigateToNote={onNavigateToNote} // Pass navigation handler
-                ancestorChain={[note.title]} // Initialize ancestor chain with the current note's title
+                ancestorChain={[note.id]} // Initialize ancestor chain with the current note's ID
               />
             )}
 

@@ -29,14 +29,14 @@ export interface GraphData {
 const extractLinksFromLexicalNode = (node: any, links: Set<string>) => {
   if (!node) return;
 
-  // Check for WikiLinkNode type (e.g., 'wikilink')
-  if (node.type === 'wikilink' && node.targetTitle) {
-    links.add(node.targetTitle);
+  // Check for WikiLinkNode type, expecting targetId
+  if (node.type === 'wikilink' && node.targetId) {
+    links.add(node.targetId);
   }
 
-  // Check for EmbeddedNoteNode type (e.g., 'embedded-note')
-  if (node.type === 'embedded-note' && node.targetTitle) {
-    links.add(node.targetTitle);
+  // Check for EmbeddedNoteNode type, expecting targetId
+  if (node.type === 'embedded-note' && node.targetId) {
+    links.add(node.targetId);
   }
 
   if (node.children && Array.isArray(node.children)) {
@@ -95,10 +95,10 @@ export const notesToGraphData = (notes: Note[] = [], previousData?: GraphData): 
     const sourceNote = notes.find(n => n.id === prevLink.source);
     const targetNote = notes.find(n => n.id === prevLink.target);
     
-    if (!sourceNote || !targetNote) return prevLink;
+    if (!sourceNote || !targetNote) return prevLink; // Should not happen if currentIds check passed
     
     const isBidirectional = parseLexicalContentForLinks(targetNote.content)
-      .some(link => link.toLowerCase() === sourceNote.title.toLowerCase());
+      .some(linkId => linkId === sourceNote.id); // Compare IDs
     
     return {...prevLink, bidirectional: isBidirectional};
   });
@@ -108,8 +108,8 @@ export const notesToGraphData = (notes: Note[] = [], previousData?: GraphData): 
   const linkMap = new Map<string, Set<string>>();
 
   notes.forEach(note => {
-    parseLexicalContentForLinks(note.content).forEach(linkTitle => {
-      const targetNote = notes.find(n => n.title.toLowerCase() === linkTitle.toLowerCase());
+    parseLexicalContentForLinks(note.content).forEach(linkId => { // linkTitle is now linkId
+      const targetNote = notes.find(n => n.id === linkId); // Find target note by ID
       if (targetNote && targetNote.id !== note.id) {
         const linkKey = `${note.id}-${targetNote.id}`;
         const reverseLinkKey = `${targetNote.id}-${note.id}`;
@@ -117,8 +117,9 @@ export const notesToGraphData = (notes: Note[] = [], previousData?: GraphData): 
         if (!linkMap.has(linkKey) && !linkMap.has(reverseLinkKey)) {
           linkMap.set(linkKey, new Set([note.id, targetNote.id]));
           
+          // Check for bidirectionality by seeing if the target note links back to the current note's ID
           const isBidirectional = parseLexicalContentForLinks(targetNote.content)
-            .some(reverseLink => reverseLink.toLowerCase() === note.title.toLowerCase());
+            .some(reverseLinkId => reverseLinkId === note.id);
           
           newLinks.push({
             source: note.id,

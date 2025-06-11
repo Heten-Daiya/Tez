@@ -6,6 +6,8 @@ import { Note, Task } from '../types';
 import { generateDefaultTitle, generateSequentialTitle } from '../utils/noteUtils';
 import { updateLexicalLinks } from '../utils/lexicalLinkUtils';
 import { scrollToNote } from '../utils/scrollUtils';
+import { NOTE_COLORS } from '../utils/constants'; // Import NOTE_COLORS from constants
+
 /**
  * Hook that provides notes state and operations
  * @returns Object containing notes state and methods to manipulate notes
@@ -49,42 +51,15 @@ export const useNotes = (notes: Note[], setNotes: React.Dispatch<React.SetStateA
     };
   }, [notes, setNotes]);
 
-
-    // Available note colors using Tailwind CSS classes
-  const NOTE_COLORS = [
-    'bg-slate-100/90 dark:bg-slate-900/80',
-    'bg-gray-100/90 dark:bg-gray-900/80',
-    'bg-zinc-100/90 dark:bg-zinc-900/80',
-    'bg-neutral-100/90 dark:bg-neutral-900/80',
-    'bg-stone-100/90 dark:bg-stone-900/80',
-    'bg-red-100/90 dark:bg-red-900/70',
-    'bg-orange-100/90 dark:bg-orange-900/70',
-    'bg-amber-100/90 dark:bg-amber-900/70',
-    'bg-yellow-100/90 dark:bg-yellow-900/70',
-    'bg-lime-100/90 dark:bg-lime-900/70',
-    'bg-green-100/90 dark:bg-green-900/70',
-    'bg-emerald-100/90 dark:bg-emerald-900/70',
-    'bg-teal-100/90 dark:bg-teal-900/70',
-    'bg-cyan-100/90 dark:bg-cyan-900/70',
-    'bg-sky-100/90 dark:bg-sky-900/70',
-    'bg-blue-100/90 dark:bg-blue-900/70',
-    'bg-indigo-100/90 dark:bg-indigo-900/70',
-    'bg-violet-100/90 dark:bg-violet-900/70',
-    'bg-purple-100/90 dark:bg-purple-900/70',
-    'bg-fuchsia-100/90 dark:bg-fuchsia-900/70',
-    'bg-pink-100/90 dark:bg-pink-900/70',
-    'bg-rose-100/90 dark:bg-rose-900/70'
-  ];
-
   /**
    * Creates a new note with random background color and proper state initialization
    */
-  const createNote = () => {
+  const createNote = (title?: string) => {
     try {
       const randomColor = NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)];
       const newNote: Note = {
         id: Date.now().toString(),
-        title: generateSequentialTitle(notes),
+        title: title || generateSequentialTitle(notes),
         content: JSON.stringify({ root: { children: [{ children: [], direction: null, format: '', indent: 0, type: 'paragraph', version: 1 }], direction: null, format: '', indent: 0, type: 'root', version: 1 } }),
         color: randomColor,
         tasks: [],

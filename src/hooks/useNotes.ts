@@ -2,7 +2,7 @@
  * Custom hook for managing notes state and operations
  */
 import { useState, useEffect } from 'react';
-import { Note, Task } from '../types';
+import { Note, Task, TaskSortOption, TaskPriority, TaskStatus } from '../types';
 import { generateDefaultTitle, generateSequentialTitle } from '../utils/noteUtils';
 import { updateLexicalLinks } from '../utils/lexicalLinkUtils';
 import { scrollToNote } from '../utils/scrollUtils';
@@ -70,8 +70,10 @@ export const useNotes = (notes: Note[], setNotes: React.Dispatch<React.SetStateA
         hideTasksSection: true,
         hideTagsSection: true,
         hideToolbar: true,
-        hideAddTasksButton: true,
-	position: notes.length
+        hideAddTasksButton: true, // Assuming this was a typo and meant hideAddTask
+	      position: notes.length,
+        taskSortOption: 'position' as TaskSortOption, // Default task sort option
+        taskSortDirection: 'asc',   // Default task sort direction
       };
       setNotes(prevNotes => [newNote, ...prevNotes]);
       // Scroll to the new note after a short delay to allow rendering
@@ -133,12 +135,11 @@ const updateNote = (noteId: string, updates: Partial<Note>): boolean => {
           title: updates.title !== undefined ? updates.title : currentNote.title,
           content: updates.content !== undefined ? updates.content : currentNote.content,
           color: updates.color && NOTE_COLORS.includes(updates.color) ? updates.color : currentNote.color,
-          tasks: Array.isArray(updates.tasks) ? updates.tasks.map(task => ({
-            ...task,
-            id: task.id || Date.now().toString(),
-            text: task.text || '',
-            completed: Boolean(task.completed)
-          })) : currentNote.tasks,
+          // If updates.tasks is provided, it's the new complete array of tasks from DND,
+          // already containing new task objects with new positions.
+          tasks: Array.isArray(updates.tasks)
+            ? updates.tasks // Use the array directly as it's already correctly formed with new objects
+            : currentNote.tasks,
           tags: Array.isArray(updates.tags) ? updates.tags.map(tag => tag.trim()).filter((tag, index, self) => self.findIndex(t => t.toLowerCase() === tag.toLowerCase()) === index) : currentNote.tags,
           isCollapsed: updates.isCollapsed !== undefined ? Boolean(updates.isCollapsed) : currentNote.isCollapsed,
           hideContent: updates.hideContent !== undefined ? Boolean(updates.hideContent) : currentNote.hideContent,
@@ -146,7 +147,9 @@ const updateNote = (noteId: string, updates: Partial<Note>): boolean => {
           hideTagsSection: updates.hideTagsSection !== undefined ? Boolean(updates.hideTagsSection) : currentNote.hideTagsSection,
           hideToolbar: updates.hideToolbar !== undefined ? Boolean(updates.hideToolbar) : currentNote.hideToolbar,
           hideAddTasksButton: updates.hideAddTasksButton !== undefined ? Boolean(updates.hideAddTasksButton) : currentNote.hideAddTasksButton,
-          position: typeof updates.position === 'number' ? updates.position : currentNote.position
+          position: typeof updates.position === 'number' ? updates.position : currentNote.position,
+          taskSortOption: updates.taskSortOption ? updates.taskSortOption : currentNote.taskSortOption,
+          taskSortDirection: updates.taskSortDirection ? updates.taskSortDirection : currentNote.taskSortDirection,
         };
 
         updatedNotes[targetNoteIndex] = { ...currentNote, ...validatedUpdates };
@@ -175,14 +178,16 @@ const updateNote = (noteId: string, updates: Partial<Note>): boolean => {
           const noteToDelete = prevNotes.find(n => n.id === noteId);
           if (!noteToDelete) return prevNotes; // Should not happen if note was found earlier
 
-          const deletedPosition = noteToDelete.position;
+          const deletedPosition = noteToDelete.position as number | undefined; // Ensure type
           const updatedNotes = prevNotes
             .filter(note => note.id !== noteId)
-            .map(note => ({
-              ...note,
-              position: note.position > deletedPosition ? note.position - 1 : note.position
-            }));
-          
+            .map(n => {
+              if (deletedPosition !== undefined && n.position !== undefined && n.position > deletedPosition) {
+                return { ...n, position: n.position - 1 };
+              }
+              return n;
+            });
+
           // Also update IndexedDB immediately
           import('../utils/cacheUtils').then(({ cacheNotes }) => {
             cacheNotes(updatedNotes);
@@ -212,7 +217,16 @@ const updateNote = (noteId: string, updates: Partial<Note>): boolean => {
       const newTask: Task = {
         id: Date.now().toString(),
         text: '',
-        completed: false
+        title: 'Untitled Task',
+        description: '',
+        completed: false,
+        priority: TaskPriority.Medium,
+        status: TaskStatus.NotStarted,
+        position: note.tasks.length, // Initialize position
+        progress: 0,                 // Initialize progress
+        fulfils: [],                 // Initialize fulfils
+        requires: [],                // Initialize requires
+        notifications: []            // Initialize notifications
       };
 
       const updatedTasks = [...note.tasks, newTask];
@@ -258,7 +272,20 @@ const updateNote = (noteId: string, updates: Partial<Note>): boolean => {
       const note = notes.find(n => n.id === noteId);
       if (!note) return false;
 
-      const updatedTasks = note.tasks.filter(task => task.id !== taskId);
+      const taskToDeleteIndex = note.tasks.findIndex(task => task.id === taskId);
+      if (taskToDeleteIndex === -1) return false;
+
+      const taskToDelete = note.tasks[taskToDeleteIndex];
+      const deletedPosition = taskToDelete.position;
+
+      const updatedTasks = note.tasks
+        .filter(task => task.id !== taskId)
+        .map(task => {
+          if (task.position !== undefined && deletedPosition !== undefined && task.position > deletedPosition) {
+            return { ...task, position: task.position - 1 };
+          }
+          return task;
+        });
       return updateNote(noteId, { tasks: updatedTasks });
     } catch (error) {
       console.error('Error deleting task:', error);

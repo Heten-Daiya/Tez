@@ -1,4 +1,3 @@
-<think>Create a new `Portal.tsx` component. This component will use `ReactDOM.createPortal` to render its children into the `modal-root` div in `index.html`. This is the core mechanism for global modal rendering.</think>
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 

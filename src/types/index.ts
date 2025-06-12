@@ -44,6 +44,11 @@ export const getStatusColor = (status: TaskStatus): string => {
   }
 };
 
+/**
+ * Represents a sortable property of a Task
+ */
+export type TaskSortOption = 'title' | 'priority' | 'status' | 'startDate' | 'endDate' | 'progress' | 'position';
+
 
 /**
  * Represents a task within a note
@@ -64,6 +69,7 @@ export interface Task {
   requires: string[];      // IDs of tasks that this task requires
   text?: string;           // Legacy field maintained for backward compatibility
   notifications: NotificationConfig[];  // Task notifications configuration
+  position?: number;       // Added for manual sorting
 }
 
 /**
@@ -85,6 +91,8 @@ export interface Note {
   hideWordCount?: boolean;
   hideReadingTime?: boolean;
   hidePendingTasks?: boolean;
+  taskSortOption?: TaskSortOption; // Added for task sorting
+  taskSortDirection?: 'asc' | 'desc'; // Added for task sorting
 }
 
 /**

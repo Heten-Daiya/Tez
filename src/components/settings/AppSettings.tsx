@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sun, Moon, Database } from 'lucide-react';
+import { Sun, Moon, Database, Eye, EyeOff } from 'lucide-react';
 import { ToggleButton } from '../ToggleButton';
 import { Accordion } from '../ui/Accordion';
 import { ColorBadge } from '../ColorBadge';
@@ -9,6 +9,8 @@ import { DatabaseSettings, DatabaseType } from '../../types';
 interface AppSettingsProps {
   darkMode: boolean;
   toggleDarkMode: () => void;
+  FX: boolean;
+  toggleFX: () => void;
   accentColor: string;
   setAccentColor: (color: string) => void;
   backgroundImage?: string;
@@ -23,6 +25,8 @@ interface AppSettingsProps {
 const AppSettingsInner: React.FC<AppSettingsProps> = ({
   darkMode,
   toggleDarkMode,
+  FX,
+  toggleFX,
   accentColor,
   setAccentColor,
   backgroundImage,
@@ -70,6 +74,7 @@ const AppSettingsInner: React.FC<AppSettingsProps> = ({
         isOpen={openSections.appearance}
         onToggle={() => toggleSection('appearance')}
         darkMode={darkMode}
+        FX={FX}
         accentColor={accentColor}
         searchTerm={searchTerm}
         searchableText="appearance dark light mode theme accent color background image wallpaper"
@@ -83,6 +88,15 @@ const AppSettingsInner: React.FC<AppSettingsProps> = ({
             disabledIcon={Moon}
             label={darkMode ? 'Light Mode' : 'Dark Mode'}
             darkMode={darkMode}
+            accentColor={accentColor}
+          />
+          <ToggleButton
+            enabled={FX}
+            setEnabled={toggleFX}
+            enabledIcon={Eye}
+            disabledIcon={EyeOff}
+            label='FX'
+            FX={FX}
             accentColor={accentColor}
           />
           

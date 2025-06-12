@@ -1,5 +1,5 @@
 # Tez
-## v0.0.2 - Alpha
+## v0.0.3 - Alpha
 Tez is a breathtakingly beautiful knowledge aggregator!
 
 Built with the following stack
@@ -11,10 +11,17 @@ Built with the following stack
 - Lexical
 - DNDkit
 - Lucide Icons
+- react-force-graph-3d
 
-This is pre-release version v0.0.2 - Alpha
+What's added to this pre-release version v0.0.3 - Alpha
 
-What's working
+- [x] Note list Modal.
+- [x] Improved Note linking and Embedding with IDs instead of titles.
+- [x] Links - Embed conversion and vice versa.
+- [x] Preliminary support for task re-ordering and sorting.
+- [x] Fixed styling issues with maximized notes.
+
+What's added to this pre-release version v0.0.2 - Alpha
 - [x] Create a new note
 - [x] Edit a note
 - [x] Delete a note
@@ -27,7 +34,8 @@ What's working
 - [x] Import notes
 - [x] Copy notes
 - [x] Paste notes
-- [x] Undo/Redo in notes
+- [x] Undo/Redo inside notes
+- [x] Dark mode
 
 Partially Working
 - [x] Color Customization

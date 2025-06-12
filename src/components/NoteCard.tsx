@@ -1,7 +1,7 @@
 /**
  * NoteCard component for displaying and editing individual notes
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Note, Task } from '../types';
 import { Trash2, Settings, Minus, PanelTopOpen } from 'lucide-react';
 import LexicalMarkdownEditor from './LexicalMarkdownEditor';
@@ -50,7 +50,8 @@ const NoteCard: React.FC<NoteCardProps> = ({
   accentColor,
   onNavigateToNote // Destructure the new prop
 }) => {
-  const { accentColor: contextAccentColor } = useAppContext();
+  // Get darkMode from context for passing to TasksSection
+  const { accentColor: contextAccentColor, darkMode } = useAppContext();
   const effectiveAccentColor = accentColor || contextAccentColor || 'bg-indigo-600';
   const [localTitle, setLocalTitle] = useState(note.title);
   const [localContent, setLocalContent] = useState(note.content);
@@ -174,6 +175,10 @@ const NoteCard: React.FC<NoteCardProps> = ({
                 deleteTask={deleteTask}
                 accentColor={effectiveAccentColor}
                 hideAddTask={note.hideAddTask}
+                taskSortOption={note.taskSortOption || 'position'}
+                taskSortDirection={note.taskSortDirection || 'asc'}
+                updateNote={(updates) => updateNote(note.id, updates)}
+                darkMode={darkMode}
               />
             )}
 

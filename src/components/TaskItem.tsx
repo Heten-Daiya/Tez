@@ -39,6 +39,7 @@ interface TaskItemProps {
     showProgress: boolean;
     showDependencies: boolean;
   };
+  dragHandleProps?: { [key:string]: any }; // Added for drag handle
 }
 
 // Default display settings if none provided
@@ -61,7 +62,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   updateTask, 
   deleteTask,
   isNew = false, // Default isNew to false
-  displaySettings = defaultDisplaySettings
+  displaySettings = defaultDisplaySettings,
+  dragHandleProps = {} // Destructure dragHandleProps
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(isNew);
@@ -142,6 +144,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
   // Accordion title content (collapsed view)
   const accordionTitle = (
     <div className="flex items-center space-x-2 w-full">
+      {/* Drag Handle */}
+      <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing touch-none p-1">
+        <svg width="10" height="10" viewBox="0 0 10 10" className="text-gray-400">
+          <circle cx="2" cy="2" r="1" fill="currentColor" />
+          <circle cx="8" cy="2" r="1" fill="currentColor" />
+          <circle cx="2" cy="8" r="1" fill="currentColor" />
+          <circle cx="8" cy="8" r="1" fill="currentColor" />
+        </svg>
+      </div>
       {/* Task completion toggle */}
       <button
         onClick={(e) => {

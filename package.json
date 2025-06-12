@@ -2,7 +2,7 @@
   "name": "tez",
   "private": true,
   "license": "MIT",
-  "version": "0.0.1 - Alpha",
+  "version": "0.0.3 - Alpha",
   "type": "module",
   "scripts": {
     "dev": "vite",

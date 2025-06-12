@@ -39,6 +39,8 @@ function App() {
   const { 
     darkMode, 
     toggleDarkMode,
+    FX,
+    toggleFX,
     showTasksInEmbeddedNotes,
     setShowTasksInEmbeddedNotes,
     showTagsInEmbeddedNotes,
@@ -114,7 +116,7 @@ function App() {
   return (
     // Main application wrapper with dark mode support
     <div 
-      className={`min-h-screen transition-all duration-500 ease-in-out ${darkMode ? 'dark bg-gray-900' : 'bg-gray-300'} ${isGridMaximized ? 'maximized-container' : ''}`}
+      className={`min-h-screen transition-all duration-500 ease-in-out ${darkMode ? 'dark bg-gray-900' : 'bg-gray-300'}`}
       style={backgroundImage ? {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -126,6 +128,8 @@ function App() {
       <Header 
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
+        FX={FX}
+        toggleFX={toggleFX}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         showNewNoteForm={handleShowNewNoteForm}
@@ -198,6 +202,8 @@ function App() {
             <SettingsModal 
               darkMode={darkMode}
               toggleDarkMode={toggleDarkMode}
+              FX={FX}
+              toggleFX={toggleFX}
               showTasksInEmbeddedNotes={showTasksInEmbeddedNotes}
               setShowTasksInEmbeddedNotes={setShowTasksInEmbeddedNotes}
               showTagsInEmbeddedNotes={showTagsInEmbeddedNotes}
@@ -220,6 +226,7 @@ function App() {
           filteredNotes={filteredNotes}
           notes={notes}
           darkMode={darkMode}
+          FX={FX}
           updateNote={updateNote}
           deleteNote={deleteNote}
           addTask={addTask}

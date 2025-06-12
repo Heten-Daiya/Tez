@@ -14,6 +14,8 @@ export type SortOption = 'title' | 'dateCreated' | 'size' | 'contentLength' | 't
 type AppContextType = {
   darkMode: boolean;
   toggleDarkMode: () => void;
+  FX: boolean;
+  toggleFX: () => void;
   showTasksInEmbeddedNotes: boolean;
   setShowTasksInEmbeddedNotes: (show: boolean) => void;
   showTagsInEmbeddedNotes: boolean;
@@ -53,6 +55,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return newFile;
   }, []);
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [FX, setFX] = useState<boolean>(false);
   const [showTasksInEmbeddedNotes, setShowTasksInEmbeddedNotes] = useState<boolean>(true);
   const [showTagsInEmbeddedNotes, setShowTagsInEmbeddedNotes] = useState<boolean>(true);
   const [showDendrogram, setShowDendrogram] = useState<boolean>(false);
@@ -83,6 +86,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const loadCachedSettings = async () => {
       const cachedDarkMode = await getCachedSetting('darkMode');
       if (cachedDarkMode !== null) setDarkMode(cachedDarkMode);
+
+      const cachedFX = await getCachedSetting('fx');
+      if (cachedFX !== null) setFX(cachedFX);
       
       const cachedShowTasks = await getCachedSetting('showTasksInEmbeddedNotes');
       if (cachedShowTasks !== null) setShowTasksInEmbeddedNotes(cachedShowTasks);
@@ -110,6 +116,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newMode = !darkMode;
     setDarkMode(newMode);
     cacheSettings('darkMode', newMode);
+  };
+
+  const toggleFX = () => {
+    const newFX = !FX;
+    setFX(newFX);
+    cacheSettings('fx', newFX);
   };
 
   const handleSetShowTasksInEmbeddedNotes = (show: boolean) => {
@@ -150,6 +162,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     addLocalFile,
     darkMode,
     toggleDarkMode,
+    FX,
+    toggleFX,
     showTasksInEmbeddedNotes,
     setShowTasksInEmbeddedNotes: handleSetShowTasksInEmbeddedNotes,
     showTagsInEmbeddedNotes,
@@ -168,6 +182,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setSortDirection
   }), [
     darkMode,
+    FX,
     showTasksInEmbeddedNotes,
     showTagsInEmbeddedNotes,
     showDendrogram,

@@ -253,7 +253,7 @@ export const NotesGrid: FC<NotesGridProps> = ({
 
   return (
     <div 
-      className={`masonry-wrapper relative ${isGridMaximized ? 'maximized-container' : ''} ${isMarqueeSelectionActive ? 'cursor-crosshair' : ''}`} // Use isGridMaximized
+      className={`masonry-wrapper relative ${isMarqueeSelectionActive ? 'cursor-crosshair' : ''}`} // Use isGridMaximized
       ref={gridRef}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}

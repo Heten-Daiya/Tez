@@ -9,6 +9,7 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
+import { AutoLinkPlugin } from '@lexical/react/LexicalAutoLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
@@ -403,7 +404,23 @@ const LexicalMarkdownEditor: React.FC<LexicalMarkdownEditorProps> = ({
             />
             {!isEmbedded && <HistoryPlugin />}
             {!isEmbedded && <AutoFocusPlugin />}
-            <LinkPlugin /> {/* Essential for link functionality, even in read-only views */}
+            <LinkPlugin />
+      <AutoLinkPlugin
+        matchers={[
+          (text) => {
+            const match = /((https?:\/\/(?:www\.)?|www\.)[^\s.]+[^\s]+)/.exec(text);
+            if (match) {
+              return {
+                index: match.index,
+                length: match[0].length,
+                text: match[0],
+                url: match[1].startsWith('http') ? match[1] : `https://${match[1]}`, // Ensure URL has a protocol
+              };
+            }
+            return null;
+          },
+        ]}
+      /> {/* Essential for link functionality, even in read-only views */}
             <ListPlugin /> {/* Needed for rendering lists */}
             <CheckListPlugin /> {/* Needed for rendering checklists */}
             <TablePlugin /> {/* Needed for rendering tables */}
